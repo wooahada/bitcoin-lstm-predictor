@@ -5,19 +5,12 @@ import torch
 import numpy as np
 from utils.bybit_api import get_bybit_historical_data
 from utils.preprocess import preprocess_lstm_data
-from lstm_pytorch_trainer import LSTMRegressor
+from models.lstm_model import LSTMRegressor
 
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
 
-# ✅ Windows용 한글 폰트 경로 지정
-font_path = "C:\\Windows\\Fonts\\malgun.ttf"  # 맑은고딕
-font_name = font_manager.FontProperties(fname=font_path).get_name()
-
-# ✅ 한글 폰트 설정
-matplotlib.rc('font', family=font_name)
-matplotlib.rcParams['axes.unicode_minus'] = False
 
 def plot_prediction(df, predicted_price, interval='15m'):
     import matplotlib
