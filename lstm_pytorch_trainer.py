@@ -1,8 +1,12 @@
- # lstm_pytorch_trainer.py
+# lstm_pytorch_trainer.py
 
 import os
 import torch
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import matplotlib.dates as mdates
+from matplotlib import font_manager
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
@@ -11,6 +15,21 @@ from utils.preprocess import preprocess_lstm_data
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 from models.lstm_model import LSTMRegressor  # ✅ 외부 모델 파일에서 import
+
+# ✅ 한글 폰트 설정 (배포 환경에서도 안전하게)
+try:
+    font_path = "assets/micross.ttf"
+    if os.path.exists(font_path):
+        font_prop = font_manager.FontProperties(fname=font_path)
+        font_name = font_prop.get_name()
+        matplotlib.rcParams['font.family'] = font_name
+    else:
+        font_prop = None
+except Exception as e:
+    print(f"⚠️ [LOG] 폰트 설정 실패: {e}")
+    font_prop = None
+
+matplotlib.rcParams['axes.unicode_minus'] = False
 
 # 하이퍼파라미터
 SEQ_LEN = 60
@@ -30,6 +49,10 @@ def train_and_save_model(interval_name, bybit_interval):
     # 2. 전처리
     X_train, y_train, X_test, y_test, scaler = preprocess_lstm_data(df, sequence_length=SEQ_LEN)
 
+    # y_test shape 보정 (scaler 오류 방지)
+    if y_test.ndim == 1:
+        y_test = y_test.reshape(-1, 1)
+
     # 3. Tensor 변환
     X_train = torch.tensor(X_train, dtype=torch.float32)
     y_train = torch.tensor(y_train, dtype=torch.float32)
@@ -37,6 +60,7 @@ def train_and_save_model(interval_name, bybit_interval):
 
     # 4. 모델 정의
     model = LSTMRegressor()
+    print(model)  # ⭐⭐⭐⭐⭐ 모델 구조 출력
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 
@@ -76,6 +100,23 @@ def train_and_save_model(interval_name, bybit_interval):
     print(f"📉 RMSE: {rmse:.2f}")
     print(f"📈 R² Score: {r2:.4f}")
 
+    # 8. 시각화 (선택적으로)
+    try:
+        fig, ax = plt.subplots(figsize=(12, 5))
+        ax.plot(df.index[-100:], df['close'][-100:], label='실제 가격', linewidth=2)
+        ax.plot(df.index[-1], y_pred_real[-1], 'ro', label='예측 가격')
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M'))
+        fig.autofmt_xdate()
+        ax.set_title(f'{interval_name} 예측 결과', fontsize=14, fontproperties=font_prop)
+        ax.set_xlabel('시간', fontproperties=font_prop)
+        ax.set_ylabel('가격 (USDT)', fontproperties=font_prop)
+        ax.legend(prop=font_prop)
+        ax.grid(True)
+        plt.tight_layout()
+        plt.show()
+    except Exception as vis_err:
+        print(f"⚠️ [LOG] 시각화 실패: {vis_err}")
+
 # 🔥 메인 실행부
 if __name__ == "__main__":
     print("🔥 FILE EXECUTED\n")
@@ -88,5 +129,4 @@ if __name__ == "__main__":
     }
 
     for name, bybit_code in INTERVALS.items():
-        train_and_save_model(name, bybit_code) 
-
+        train_and_save_model(name, bybit_code)

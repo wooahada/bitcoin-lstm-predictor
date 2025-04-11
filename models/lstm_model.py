@@ -1,5 +1,5 @@
 # models/lstm_model.py
-import torch
+import torch    
 import torch.nn as nn
 
 class LSTMRegressor(nn.Module):
@@ -15,7 +15,5 @@ class LSTMRegressor(nn.Module):
     #성능올리는 법
 
 # ✅ 다중 피처용 LSTM 구조 변경 방법
-
 # ✅ Dropout 추가해 정확도 향상하는 방법
-
 # ✅ Bidirectional LSTM으로 변경하는 팁
