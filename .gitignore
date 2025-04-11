@@ -1,8 +1,23 @@
-venv/
+# Python
 __pycache__/
-*.pyc
-*.pkl
-*.h5
-*.pt
+*.py[cod]
+*.egg-info/
+*.log
+
+# VSCode
+.vscode/
+
+# Environments
+env/
+venv/
+.venv/
+
+# OS
 .DS_Store
-.env
+Thumbs.db
+
+# Models and data
+#models/*.pt
+
+# Streamlit cache
+.streamlit/
