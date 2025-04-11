@@ -3,24 +3,28 @@
 import os
 import torch
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import matplotlib.dates as mdates
+from matplotlib import font_manager
+
 from utils.bybit_api import get_bybit_historical_data
 from utils.preprocess import preprocess_lstm_data
 from models.lstm_model import LSTMRegressor
-import matplotlib.pyplot as plt
-import matplotlib as mdates
-import matplotlib.font_manager as font_manager
-from matplotlib import rcParams
-import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
-import matplotlib as matplotlib 
 
+# ✅ 한글 폰트 설정 (배포 환경 대응)
+try:
+    font_path = "assets/micross.ttf"
+    if os.path.exists(font_path):
+        font_name = font_manager.FontProperties(fname=font_path).get_name()
+        matplotlib.rcParams['font.family'] = font_name
+        print(f"✅ [LOG] predict.py에서 폰트 적용 완료: {font_name}")
+    else:
+        print("⚠️ [LOG] predict.py에서 폰트 파일을 찾을 수 없습니다.")
+except Exception as e:
+    print(f"⚠️ [LOG] predict.py 폰트 설정 실패: {e}")
 
-
-# 프로젝트 경로에 있는 폰트 설정
-font_path = "assets/micross.ttf"
-if os.path.exists(font_path):
-    font_name = font_manager.FontProperties(fname=font_path).get_name()
-    matplotlib.rcParams['font.family'] = font_name
+matplotlib.rcParams['axes.unicode_minus'] = False
 
 def predict_lstm_price(interval='5m', model_dir='models', steps=1):
     try:
