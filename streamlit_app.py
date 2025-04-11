@@ -9,10 +9,6 @@ import matplotlib.dates as mdates
 from matplotlib import font_manager
 from utils.predict import predict_lstm_price
 
-# ✅ 한글 폰트 세팅
-font_path = "C:\\Windows\\Fonts\\malgun.ttf"
-font_name = font_manager.FontProperties(fname=font_path).get_name()
-matplotlib.rcParams['font.family'] = font_name
 matplotlib.rcParams['axes.unicode_minus'] = False
 
 # ✅ Streamlit 화면 UI
