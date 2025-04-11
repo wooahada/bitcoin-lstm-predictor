@@ -7,35 +7,24 @@ from utils.bybit_api import get_bybit_historical_data
 from utils.preprocess import preprocess_lstm_data
 from models.lstm_model import LSTMRegressor
 
-import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib import font_manager
 
 
 def plot_prediction(df, predicted_price, interval='15m'):
-    import matplotlib
-    import matplotlib.pyplot as plt
-    from matplotlib import font_manager
-
-    # ✅ 한글 깨짐 방지 설정
-    font_path = "C:\\Windows\\Fonts\\malgun.ttf"
-    font_name = font_manager.FontProperties(fname=font_path).get_name()
-    matplotlib.rc('font', family=font_name)
-    matplotlib.rcParams['axes.unicode_minus'] = False
-
-    plt.figure(figsize=(12, 5))
-    plt.plot(df['close'][-100:], label='실제 가격', linewidth=2)
-    plt.axhline(y=predicted_price, color='red', linestyle='--', label='예측 가격')
-    plt.title(f'BTCUSDT {interval} 예측 결과', fontsize=14)
-    plt.xlabel('시간')
-    plt.ylabel('가격 (USDT)')
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
-    input("📊 그래프 창을 닫으면 계속 진행됩니다. 엔터를 눌러주세요.")
-
-
+    try:
+        plt.figure(figsize=(12, 5))
+        plt.plot(df['close'][-100:], label='실제 가격', linewidth=2)
+        plt.axhline(y=predicted_price, color='red', linestyle='--', label='예측 가격')
+        plt.title(f'BTCUSDT {interval} 예측 결과', fontsize=14)
+        plt.xlabel('시간')
+        plt.ylabel('가격 (USDT)')
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+        input("📊 그래프 창을 닫으면 계속 진행됩니다. 엔터를 눌러주세요.")
+    except Exception as e:
+        print("🔥 [ERROR] 그래프 시각화 실패:", str(e))
 
 
 def predict_lstm_price(interval='5m', model_dir='models', steps=1):
@@ -52,6 +41,7 @@ def predict_lstm_price(interval='5m', model_dir='models', steps=1):
         if interval not in interval_map:
             print("❌ [LOG] 지원되지 않는 시간 단위")
             return None, None, None
+
         print("📡 [LOG] Bybit 데이터 요청 중...")
         df = get_bybit_historical_data(interval=interval_map[interval], limit=1000)
 
@@ -95,5 +85,7 @@ def predict_lstm_price(interval='5m', model_dir='models', steps=1):
         return predicted_price, last_close, df
 
     except Exception as e:
+        import traceback
         print("🔥 [ERROR] 예외 발생:", str(e))
+        traceback.print_exc()
         return None, None, None
