@@ -19,6 +19,9 @@ try:
     if os.path.exists(font_path):
         font_name = font_manager.FontProperties(fname=font_path).get_name()
         matplotlib.rcParams['font.family'] = font_name
+        print(f"✅ [LOG] 폰트 적용 완료: {font_name}")
+    else:
+        print("⚠️ [LOG] 폰트 파일을 찾을 수 없습니다.")
 except Exception as e:
     print(f"⚠️ [LOG] 폰트 설정 실패: {e}")
 
@@ -110,5 +113,6 @@ if st.button("예측 시작"):
             st.pyplot(fig)
 
     except Exception as e:
-        st.error("🚨 예측 도중 오류가 발생했습니다. 콘솔 로그를 확인하세요.")
+        st.error("🚨 예측 도중 오류가 발생했습니다. 콘솔 로그와 아래 에러 메시지를 확인하세요.")
         st.code(traceback.format_exc())
+    

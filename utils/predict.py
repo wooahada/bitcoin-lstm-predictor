@@ -72,5 +72,7 @@ def predict_lstm_price(interval='5m', model_dir='models', steps=1):
         return predicted_price, last_close, df
 
     except Exception as e:
+        import traceback
         print("🔥 [ERROR] 예외 발생:", str(e))
+        traceback.print_exc()  # 👉 터미널에 전체 트레이스 출력
         return None, None, None
