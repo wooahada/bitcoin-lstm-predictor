@@ -85,5 +85,5 @@ matplotlib
 pandas
 requests
 scikit-learn
-torch
+torch>=1.13.0
 fonttools
