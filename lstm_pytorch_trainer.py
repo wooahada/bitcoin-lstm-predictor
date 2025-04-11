@@ -85,7 +85,7 @@ if st.button("예측 시작"):
             ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d %H:%M'))
             fig.autofmt_xdate()
 
-            ax.set_title(f'BTCUSDT {interval} 예측 결과', fontsize=14)
+            ax.set_title(f'BTCUSDT {interval} Prediction', fontsize=14)
             ax.set_xlabel('시간')
             ax.set_ylabel('가격 (USDT)')
             ax.legend()

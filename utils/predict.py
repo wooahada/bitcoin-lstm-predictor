@@ -8,6 +8,19 @@ from utils.preprocess import preprocess_lstm_data
 from models.lstm_model import LSTMRegressor
 
 import matplotlib.pyplot as plt
+from matplotlib import font_manager
+import matplotlib.dates as mdates
+import traceback
+import matplotlib
+
+# 프로젝트 경로에 있는 폰트 설정
+font_path = "assets/micross.ttf"
+if os.path.exists(font_path):
+    font_name = font_manager.FontProperties(fname=font_path).get_name()
+    matplotlib.rcParams['font.family'] = font_name
+else:
+    print("❗ 폰트 파일 없음: 기본 폰트로 표시됩니다.")
+
 
 
 def plot_prediction(df, predicted_price, interval='15m'):
