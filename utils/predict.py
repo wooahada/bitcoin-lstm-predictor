@@ -1,6 +1,9 @@
 # utils/predict.py
 
 import os
+import sys
+import pandas as pd     
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,16 +16,20 @@ from utils.preprocess import preprocess_lstm_data
 from models.lstm_model import LSTMRegressor
 
 # ✅ 한글 폰트 설정
+
 try:
-    font_path = "assets/micross.ttf"
+    font_path = "assets/NotoSansCJKkr-Regular.otf"  # 💡 한글 포함된 폰트 경로
     if os.path.exists(font_path):
-        font_name = font_manager.FontProperties(fname=font_path).get_name()
+        font_prop = font_manager.FontProperties(fname=font_path)
+        font_name = font_prop.get_name()
         matplotlib.rcParams['font.family'] = font_name
-        print(f"✅ [LOG] predict.py에서 폰트 적용 완료: {font_name}")
+        matplotlib.rc('font', family=font_name)
+        plt.rcParams['font.family'] = font_name  # ✅ 스트림릿 내 fig 저장시에도 적용
+        print(f"✅ [LOG] 폰트 적용 완료: {font_name}")
     else:
-        print("⚠️ [LOG] 폰트 파일이 없습니다.")
+        print("⚠️ [LOG] 폰트 파일 없음. 기본 폰트로 출력됩니다.")
 except Exception as e:
-    print("⚠️ [LOG] 폰트 설정 실패:", str(e))
+    print(f"⚠️ [LOG] 폰트 설정 실패: {e}")
 
 matplotlib.rcParams['axes.unicode_minus'] = False
 

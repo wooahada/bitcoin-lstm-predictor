@@ -6,24 +6,31 @@ st.set_page_config(page_title="📈 비트코인 예측", layout="centered")
 
 # 📌 나머지 import
 import os
+import datetime
 import matplotlib.pyplot as plt
 import matplotlib
 import matplotlib.dates as mdates
 from matplotlib import font_manager
 from utils.predict import predict_lstm_price
+from utils.ws_client import run_websocket_in_background, get_latest_ws_prices
 import traceback
+
+# ✅ WebSocket 백그라운드 실행
+run_websocket_in_background()
 
 # ✅ 한글 폰트 설정 (배포 환경에서도 안전하게)
 try:
-    font_path = "assets/micross.ttf"  # 프로젝트 내 폰트 (micross.ttf 등)
+    font_path = "assets/NotoSansCJKkr-Regular.otf"  # 프로젝트 내 한글 폰트
     if os.path.exists(font_path):
         font_name = font_manager.FontProperties(fname=font_path).get_name()
         matplotlib.rcParams['font.family'] = font_name
-        print(f"✅ [LOG] 폰트 적용 완료: {font_name}")
+        matplotlib.rc('font', family=font_name)
+        plt.rcParams['font.family'] = font_name
+        print(f"✅ [LOG] streamlit_app.py에서 한글 폰트 적용 완료: {font_name}")
     else:
-        print("⚠️ [LOG] 폰트 파일을 찾을 수 없습니다.")
+        print("⚠️ [LOG] streamlit_app.py에서 폰트 파일을 찾을 수 없습니다.")
 except Exception as e:
-    print(f"⚠️ [LOG] 폰트 설정 실패: {e}")
+    print(f"⚠️ [LOG] streamlit_app.py 폰트 설정 실패: {e}")
 
 matplotlib.rcParams['axes.unicode_minus'] = False
 
@@ -61,8 +68,34 @@ if st.button("예측 시작"):
         if predicted is None:
             st.error("❌ 예측 실패. 서버 로그를 확인하세요.")
         else:
+            # ✅ 실시간 가격 표시 (WebSocket)
+            ws_prices = get_latest_ws_prices()
+            if ws_prices:
+                st.info(
+                    f"📡 실시간 가격 (Bybit): \n"
+                    f"- 🟢 **lastPrice**: {ws_prices.get('lastPrice', 'N/A')} USDT\n"
+                    f"- 🔵 **bid1Price** (매수): {ws_prices.get('bid1Price', 'N/A')} USDT\n"
+                    f"- 🔴 **ask1Price** (매도): {ws_prices.get('ask1Price', 'N/A')} USDT"
+                )
+
+                if ws_prices.get("lastPrice"):
+                    realtime_diff = predicted - float(ws_prices['lastPrice'])
+                    realtime_diff_percent = (realtime_diff / float(ws_prices['lastPrice'])) * 100
+                    st.metric("실시간 가격 기준 오차", f"{realtime_diff:.2f} USDT", f"{realtime_diff_percent:.2f}%")
+            else:
+                st.warning("🕓 실시간 가격을 아직 수신 중입니다...")
+
             # ✅ 날짜 범위 표시
             st.write("🗓️ 데이터 기간:", df.index.min(), "~", df.index.max())
+
+            # ✅ 현재 시각 기준 예측 시간 계산
+            current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            interval_seconds = {'5m': 300, '15m': 900, '1h': 3600, '4h': 14400}[interval]
+            prediction_time = datetime.datetime.now() + datetime.timedelta(seconds=steps * interval_seconds)
+            prediction_time_str = prediction_time.strftime("%Y-%m-%d %H:%M:%S")
+
+            st.write(f"⏰ 현재 시간: {current_time}")
+            st.write(f"⏰ 예측 시점 (약): {prediction_time_str}")
 
             # ✅ 이전 예측과 비교
             previous = st.session_state["previous_prediction"]
@@ -99,6 +132,9 @@ if st.button("예측 시작"):
             ax.axhline(y=predicted, color=color, linestyle='--', label='예측 수평선')
             ax.fill_between(df.index[-5:], last_price, predicted, color=color, alpha=0.2)
 
+            if ws_prices.get("lastPrice"):
+                ax.plot(df.index[-1], float(ws_prices['lastPrice']), 's', color='orange', label='WebSocket 실시간 가격')
+
             # ✅ 날짜 포맷
             ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M'))
             fig.autofmt_xdate()
@@ -113,6 +149,5 @@ if st.button("예측 시작"):
             st.pyplot(fig)
 
     except Exception as e:
-        import traceback
-        st.error("🚨 예측 도중 오류가 발생했습니다. 콘솔 로그를 확인하세요.")
-        st.code(traceback.format_exc())  # 📌 Streamlit 화면에서 전체 에러 로그 보기
+        st.error("🚨 예측 도중 오류가 발생했습니다. 아래 로그를 확인하세요.")
+        st.code("".join(traceback.format_exception(type(e), e, e.__traceback__)), language="python")

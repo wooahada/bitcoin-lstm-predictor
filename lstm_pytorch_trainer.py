@@ -13,6 +13,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from utils.bybit_api import get_bybit_historical_data
 from utils.preprocess import preprocess_lstm_data
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error
 
 from models.lstm_model import LSTMRegressor  # ✅ 외부 모델 파일에서 import
 
@@ -92,7 +93,7 @@ def train_and_save_model(interval_name, bybit_interval):
     y_test_real = scaler.inverse_transform(y_test)
 
     mae = mean_absolute_error(y_test_real, y_pred_real)
-    rmse = mean_squared_error(y_test_real, y_pred_real, squared=False)
+    rmse = mean_squared_error(y_test_real, y_pred_real) ** 0.5  # 수동으로 루트 계산
     r2 = r2_score(y_test_real, y_pred_real)
 
     print(f"\n📊 [{interval_name}] 정확도 평가 결과")
