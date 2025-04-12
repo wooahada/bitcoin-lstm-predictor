@@ -21,3 +21,6 @@ Thumbs.db
 
 # Streamlit cache
 .streamlit/
+
+# 🔽 테스트 파일 제외
+test_*.py

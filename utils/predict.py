@@ -12,7 +12,7 @@ from utils.bybit_api import get_bybit_historical_data
 from utils.preprocess import preprocess_lstm_data
 from models.lstm_model import LSTMRegressor
 
-# ✅ 한글 폰트 설정 (배포 환경 대응)
+# ✅ 한글 폰트 설정
 try:
     font_path = "assets/micross.ttf"
     if os.path.exists(font_path):
@@ -20,19 +20,16 @@ try:
         matplotlib.rcParams['font.family'] = font_name
         print(f"✅ [LOG] predict.py에서 폰트 적용 완료: {font_name}")
     else:
-        print("⚠️ [LOG] predict.py에서 폰트 파일을 찾을 수 없습니다.")
+        print("⚠️ [LOG] 폰트 파일이 없습니다.")
 except Exception as e:
-    print(f"⚠️ [LOG] predict.py 폰트 설정 실패: {e}")
+    print("⚠️ [LOG] 폰트 설정 실패:", str(e))
 
 matplotlib.rcParams['axes.unicode_minus'] = False
 
 def predict_lstm_price(interval='5m', model_dir='models', steps=1):
     try:
         print(f"✅ [LOG] 예측 함수 진입: interval={interval}, steps={steps}")
-
-        interval_map = {
-            '5m': '5', '15m': '15', '1h': '60', '4h': '240'
-        }
+        interval_map = {'5m': '5', '15m': '15', '1h': '60', '4h': '240'}
 
         if interval not in interval_map:
             print("❌ [LOG] 지원되지 않는 시간 단위")
@@ -74,5 +71,5 @@ def predict_lstm_price(interval='5m', model_dir='models', steps=1):
     except Exception as e:
         import traceback
         print("🔥 [ERROR] 예외 발생:", str(e))
-        traceback.print_exc()  # 👉 터미널에 전체 트레이스 출력
+        traceback.print_exc()
         return None, None, None

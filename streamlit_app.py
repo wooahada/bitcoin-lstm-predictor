@@ -113,6 +113,6 @@ if st.button("예측 시작"):
             st.pyplot(fig)
 
     except Exception as e:
-        st.error("🚨 예측 도중 오류가 발생했습니다. 콘솔 로그와 아래 에러 메시지를 확인하세요.")
-        st.code(traceback.format_exc())
-    
+        import traceback
+        st.error("🚨 예측 도중 오류가 발생했습니다. 콘솔 로그를 확인하세요.")
+        st.code(traceback.format_exc())  # 📌 Streamlit 화면에서 전체 에러 로그 보기
