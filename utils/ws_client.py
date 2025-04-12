@@ -3,6 +3,26 @@
 import json
 import websocket
 import threading
+import matplotlib.pyplot as plt
+from matplotlib import font_manager
+import matplotlib
+import os
+import sys
+import time
+import numpy as np  
+
+# 폰트 설정
+font_path = "assets/NotoSansCJKkr-Regular.otf"
+if os.path.exists(font_path):
+    font_prop = font_manager.FontProperties(fname=font_path)
+    font_name = font_prop.get_name()
+    matplotlib.rcParams['font.family'] = font_name
+    matplotlib.rc('font', family=font_name)
+    plt.rcParams['font.family'] = font_name  # 그래프 저장 시에도 적용
+else:
+    print("⚠️ [LOG] 폰트 파일이 없습니다.")
+
+matplotlib.rcParams['axes.unicode_minus'] = False
 
 latest_ws_data = {}
 

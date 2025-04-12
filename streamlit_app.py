@@ -1,5 +1,3 @@
-# streamlit_app.py
-
 # ✅ 반드시 첫 번째 줄에 위치해야 함
 import streamlit as st
 st.set_page_config(page_title="📈 비트코인 예측", layout="centered")
