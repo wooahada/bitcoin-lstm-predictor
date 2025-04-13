@@ -153,7 +153,7 @@ from models.lstm_model import LSTMRegressor  # ✅ 외부 모델 파일에서 im
 
 # ✅ 한글 폰트 설정 (배포 환경에서도 안전하게)
 try:
-    font_path = "assets/micross.ttf"
+    font_path = "assets/NotoSansCJKkr-Regular.otf"
     if os.path.exists(font_path):
         font_prop = font_manager.FontProperties(fname=font_path)
         font_name = font_prop.get_name()
