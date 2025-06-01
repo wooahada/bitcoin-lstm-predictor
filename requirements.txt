@@ -62,7 +62,7 @@ rich==14.0.0
 rpds-py==0.24.0
 scikit-learn==1.6.1
 scipy==1.15.2
-setuptools==78.1.0
+setuptools==78.1.1
 six==1.17.0
 smmap==5.0.2
 stanio==0.5.1
